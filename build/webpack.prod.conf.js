@@ -1,28 +1,25 @@
-var path = require('path')
-var config = require('../config')
-var utils = require('./utils')
-var webpack = require('webpack')
-var merge = require('webpack-merge')
-var baseWebpackConfig = require('./webpack.base.conf')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var env = config.build.env
+const path = require('path'),
+  utils = require('./utils'),
+  webpack = require('webpack'),
+  config = require('../config'),
+  merge = require('webpack-merge'),
+  baseWebpackConfig = require('./webpack.base.conf'),
+  HtmlWebpackPlugin = require('html-webpack-plugin'),
+  ExtractTextPlugin = require('extract-text-webpack-plugin'),
+  env = config.build.env
 
-var webpackConfig = merge(baseWebpackConfig, {
+const webpackConfig = merge(baseWebpackConfig, {
   module: {
-    loaders: utils.styleLoaders({ sourceMap: config.build.productionSourceMap, extract: true })
+    rules: utils.styleLoaders({
+      sourceMap: config.build.productionSourceMap,
+      extract: true
+    })
   },
   devtool: config.build.productionSourceMap ? '#source-map' : false,
   output: {
     path: config.build.assetsRoot,
-    filename: utils.assetsPath('js/[name].[chunkhash].js'),
-    chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
-  },
-  vue: {
-    loaders: utils.cssLoaders({
-      sourceMap: config.build.productionSourceMap,
-      extract: true
-    })
+    filename: utils.assetsPath('js/[name].[chunkhash:12].js'),
+    chunkFilename: utils.assetsPath('js/[id].[chunkhash:12].js')
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -32,11 +29,13 @@ var webpackConfig = merge(baseWebpackConfig, {
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
-      }
+      },
+      sourceMap: true
     }),
-    new webpack.optimize.OccurrenceOrderPlugin(),
     // extract css into its own file
-    new ExtractTextPlugin(utils.assetsPath('css/[name].[contenthash].css')),
+    new ExtractTextPlugin({
+      filename: utils.assetsPath('css/[name].[contenthash:12].css')
+    }),
     // split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
@@ -61,7 +60,7 @@ var webpackConfig = merge(baseWebpackConfig, {
 })
 
 if (config.build.productionGzip) {
-  var CompressionWebpackPlugin = require('compression-webpack-plugin')
+  let CompressionWebpackPlugin = require('compression-webpack-plugin')
 
   webpackConfig.plugins.push(
     new CompressionWebpackPlugin({
@@ -78,27 +77,36 @@ if (config.build.productionGzip) {
   )
 }
 
-// Vue multi pages
-var pages = utils.entriesHtml
-for(var page in pages) {
-  var fileName = page.split('/')[1] === 'home' ? 'index' + '.html' : page.split('/')[1] + '.html'
-  var conf = {
-    filename: fileName,
-    template: pages[page],
-    inject: true,
-    chunks: [page, 'vendor', 'manifest'],
-    minify: {
-      removeComments: true,
-      collapseWhitespace: true
-      // more options:
-      // https://github.com/kangax/html-minifier#options-quick-reference
-    }
-  }
-  //console.log(conf)
+if (config.build.bundleAnalyzerReport) {
+  let BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+  webpackConfig.plugins.push(new BundleAnalyzerPlugin())
+}
 
+// vue multi entries
+let pages = require('./entry.conf').entriesHtml
+
+for(let page in pages) {
+  let fileName = page.split('/')[1] === 'home'
+        ? 'index' + '.html'
+        : page.split('/')[1] + '.html',
+    conf = {
+      filename: fileName,
+      template: pages[page],
+      inject: true,
+      chunks: [page, 'vendor', 'manifest'],
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        // removeAttributeQuotes: true
+        // more options:
+        // https://github.com/kangax/html-minifier#options-quick-reference
+      },
+      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+      chunksSortMode: 'dependency'
+    }
   // generate dist *.html with correct asset hash for caching.
   // you can customize output by editing /*.html
-  // see https://github.com/ampedandwired/html-webpack-plugin
+  // https://github.com/ampedandwired/html-webpack-plugin
   webpackConfig.plugins.push(new HtmlWebpackPlugin(conf))
 }
 

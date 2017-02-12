@@ -1,6 +1,8 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <h3>(webpack@2.21 && vue@2.1.10 && vue-router)</h3>
+    <a href="https://webpack.js.org/">Webpack@2</a>
     <h2>Essential Links</h2>
     <ul>
       <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
@@ -35,6 +37,12 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+}
+
+h3 {
+  color: red;
+  padding: 20px 0;
+  background-color: pink;
 }
 
 ul {

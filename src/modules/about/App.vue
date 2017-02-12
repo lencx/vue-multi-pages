@@ -1,18 +1,20 @@
 <template>
-  <div id="about">
-    <h1>Vue Multi Pages</h1>
-    <hello></hello>
+  <div id="app-about">
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about.html">About</a>
+    </nav>
+    <hr>
+    <h1>about</h1>
+    <router-link to="/about">about(default)</router-link>
+    <router-link to="/about/2">about2</router-link>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import Hello from '../../components/Hello'
-
 export default {
-  name: 'about',
-  components: {
-    Hello
-  }
+  name: 'app'
 }
 </script>
 
@@ -20,31 +22,19 @@ export default {
 body {
   background-color: pink;
 }
-#about {
+nav a {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+a {
+  padding: 10px;
+}
+#app-about {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
-}
-li>a {
-  padding: 3px 5px;
-  color: #f00 !important;
-  font-weight: bold;
-}
-li>a:hover {
-  background-color: #fff;
-  text-decoration: none;
-  border-radius: 5px;
-}
-</style>
-
-<style scoped>
-/*
-使用scoped属性不会覆盖组件中的样式，只对本文件中的元素起作用
-*/
-h1 {
-  color: green;
 }
 </style>

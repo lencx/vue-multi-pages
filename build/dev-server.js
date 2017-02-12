@@ -1,45 +1,51 @@
 require('./check-versions')()
-var config = require('../config')
-if (!process.env.NODE_ENV) process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
-var path = require('path')
-var express = require('express')
-var webpack = require('webpack')
-var opn = require('opn')
-var proxyMiddleware = require('http-proxy-middleware')
-var webpackConfig = require('./webpack.dev.conf')
+
+const config = require('../config')
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
+}
+
+const opn = require('opn'),
+  path = require('path'),
+  express = require('express'),
+  webpack = require('webpack'),
+  proxyMiddleware = require('http-proxy-middleware'),
+  webpackConfig = require('./webpack.dev.conf')
 
 // default port where dev server listens for incoming traffic
-var port = process.env.PORT || config.dev.port
+let port = process.env.PORT || config.dev.port
+// automatically open browser, if not set will be false
+let autoOpenBrowser = !!config.dev.autoOpenBrowser
 // Define HTTP proxies to your custom API backend
 // https://github.com/chimurai/http-proxy-middleware
-var proxyTable = config.dev.proxyTable
+let proxyTable = config.dev.proxyTable
 
-var app = express()
-var compiler = webpack(webpackConfig)
+let app = express()
+let compiler = webpack(webpackConfig)
 
-var devMiddleware = require('webpack-dev-middleware')(compiler, {
+let devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
   quiet: true
 })
 
-var hotMiddleware = require('webpack-hot-middleware')(compiler, {
+let hotMiddleware = require('webpack-hot-middleware')(compiler, {
   log: () => {}
 })
 // force page reload when html-webpack-plugin template changes
-compiler.plugin('compilation', function (compilation) {
-  compilation.plugin('html-webpack-plugin-after-emit', function (data, cb) {
+compiler.plugin('compilation', (compilation) => {
+  compilation.plugin('html-webpack-plugin-after-emit', (data, cb) => {
     hotMiddleware.publish({ action: 'reload' })
     cb()
   })
 })
 
 // proxy api requests
-Object.keys(proxyTable).forEach(function (context) {
-  var options = proxyTable[context]
+Object.keys(proxyTable).forEach((context) => {
+  let options = proxyTable[context]
   if (typeof options === 'string') {
     options = { target: options }
   }
-  app.use(proxyMiddleware(context, options))
+  app.use(proxyMiddleware(options.filter || context, options))
 })
 
 // handle fallback for HTML5 history API
@@ -53,23 +59,23 @@ app.use(devMiddleware)
 app.use(hotMiddleware)
 
 // serve pure static assets
-var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
+let staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
 
-var uri = 'http://localhost:' + port
+let uri = 'http://localhost:' + port
 
-devMiddleware.waitUntilValid(function () {
+devMiddleware.waitUntilValid(() => {
   console.log('> Listening at ' + uri + '\n')
 })
 
-module.exports = app.listen(port, function (err) {
+module.exports = app.listen(port, (err) => {
   if (err) {
     console.log(err)
     return
   }
 
   // when env is testing, don't need open it
-  if (process.env.NODE_ENV !== 'testing') {
+  if (autoOpenBrowser && process.env.NODE_ENV !== 'testing') {
     opn(uri)
   }
 })

@@ -1,32 +1,36 @@
 # vue-multi-pages
 
-> Vue Multi Pages init
-
+> Vue Multi Pages(vue@2 && webpack@2)
 
 ```bash
-proj
-|- build
-|- config
-|- dist # build file
-|- node_modules
-|- src
-|   |- assets
-|   |- compontents
-|   |- modules # multi pages
-|   |     |- about
+# []: Directory
+[proj]
+|- [build]
+|- [config]
+|- [public]
+|     |- [dist] # build file
+|     `- ...
+|- [node_modules]
+|- [src]
+|   |- [assets]
+|   |- [compontents]
+|   |- [modules] # multi pages
+|   |     |- [about]
 |   |     |    |- App.vue
 |   |     |    |- about.html
 |   |     |    |- about.js # entry file
 |   |     |    `- ...
-|   |     |- home
+|   |     |- [home]
 |   |     |    |- App.vue
 |   |     |    |- index.html # default load the page
 |   |     |    |- index.js # entry file
 |   |     |    `- ...
 |   |     `- ...
+|   |- [router]
 |   `- ...
 |- package.json
 |- yarn.lock
+|- README.md
 `- ...
 
 ```
@@ -45,61 +49,57 @@ yarn dev
 # build for production with minification
 # npm run build
 yarn build
+
+# eslint => .js, .vue src
+yarn lint
+
+# build for production and view the bundle analyzer report
+npm run build --report
 ```
 
 ## Add page module
 
-> 添加新的页面模块只需在`./src/modules`中新建一个文件夹，可参考`./src/modules`目录下`home`与`about`
+> 添加新的页面模块只需在`./src/modules`中新建一个文件夹，可参考`./src/modules`目录下`home`与`about`；
+> 添加新页面的路由只需在`./src/router`中新建一个文件即可。
 
-## TODO
-
-> **scss -> css（样式预处理, 其他预处理类似）**
+## Install Plugins
 
 ```bash
+# scss -> css
 yarn add node-sass sass-loader --dev
-```
 
-> **pug -> html（模板, 其他模板类似）**
-
-```bash
+# pug -> html
 yarn add pug --dev
 ```
 
-> **Usage（在 `*.vue` 文件中的用法）**
-
-```vue
-<style lang="scss">
-
-...
-
-body{
-    background: green;
-    li {
-        list-style: none;
-    }
-    a {
-        color: #333;
-    }
-}
-
-...
-
-</style>
-```
+## Usage (*.vue file)
 
 ```vue
 <template lang="pug">
 body
     .container
+        h1
+            a(href="/..") Hello Vue
 
         ...
-
-    h1
-        a(href="/..") Hello Vue
-
-    ...
-
 </template>
+
+<style lang="scss">
+body{
+    background: green;
+    li {
+        list-style: none;
+        a {
+            color: #333;
+        }
+    }
+}
+...
+</style>
 ```
 
-**注：** 可根据自己的需求进行扩展。
+## TODO
+
+- Request data from a server
+- vuex
+- ...
